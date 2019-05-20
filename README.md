@@ -2,7 +2,7 @@
 # Overview 
 Morse Button is a program for STM32. Its main fuctionality is to translate morse code to latin alphabet. It can receive data from computer by USB port and directly from user with a button.
 # Description 
-
+:p
 # Tools 
 C language,STM32, Nokia 5110 screen, Thumb Joystick, 
 # How to run 
