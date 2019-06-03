@@ -7,7 +7,6 @@
 #include <logo.h>
 #include <string.h>
 
-
 extern SPI_HandleTypeDef hspi1;
 
 // Funkcja pomocnicza
@@ -38,8 +37,8 @@ void lcd_data(const uint8_t *data, int size) {
     HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, GPIO_PIN_SET);
 }
 
-void lcd_symbol(const uint8_t *data, int size) {
-
+void lcd_symbol(const uint8_t *data, int size)
+{
     HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, GPIO_PIN_RESET);
     for (int i = 0; i < size; i++) {
@@ -48,7 +47,9 @@ void lcd_symbol(const uint8_t *data, int size) {
     HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, GPIO_PIN_SET);
 }
 
-void lcd_write(char st[]) {
+
+void lcd_write(char st[])
+{
     uint16_t n = strlen(st);
     uint16_t x_ = 0;
     while (x_ < n) {

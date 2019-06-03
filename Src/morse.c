@@ -9,7 +9,7 @@
 #include <lcd.h>
 #include "logo.h"
 
-// Rączki
+// htim
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 
@@ -36,9 +36,9 @@ uint8_t x = 0x00;
 uint8_t y = 0x00;
 int b = 0;
 int reset = 0;  // reset ekranu, jesli wyswietla sie wynik
-int space = 0;  // czy poprzednim znakiem by�a spacja
+int space = 0;  // czy poprzednim znakiem byla spacja
 
-// Zmienne dźwiękowe
+// Zmienne dzwiekowe
 uint8_t enableSound = 0;
 
 char *concat(const char *s1, const char *s2)
@@ -304,10 +304,6 @@ void change_symbol()
     lcd_command(0x80 | x);   // Zerowanie X
 }
 
-void soundme(char c)
-{
-
-}
 
 // Przerwanie
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -389,10 +385,23 @@ void loop()
         char tempi[40];
         char tempii[40];
         int k = -1;
+        int tryb=1;//0-lacina, 1-morse
+        for (int i = 0; i < 1; i++)
+        {
+        	if (receivedData[i] == '-' || receivedData[i] == '.'||receivedData==' '||receivedData=='\0'||receivedData=='\n')
+        	{
+        		if(tryb==1)
+        		tryb=1;
+        	}//97-122
+        	else
+        	{
+        		tryb=0;
+        	}
+        }
 
         for (int i = 0; i < 40; i++)
         {
-            if (receivedData[0] == '-' || receivedData[0] == '.')
+            if (tryb==1)
             {
                 if (receivedData[i] != ' ' && i < 39)
                 {
@@ -417,16 +426,45 @@ void loop()
             else
             {
                 tomorse(receivedData[i], tempi);
-
                 re = concat(re, tempi);
                 re = concat(re, " ");
             }
         }
         lcd_write(re);
 
+        if (tryb==0)//gdy wynik to morse
+        {
+        	HAL_Delay(100);
+        	int size=strlen(re);
+        	for(int i=0;i<size;i++)
+        		        {
+        		        if(re[i]=='.'){enableSound=1;}
+        		        else if(re[i]=='-'){enableSound=3;}
+        		        else if(re[i]==' '&& re[i+1]!=' '){HAL_Delay(400);}
+        		        while(enableSound>0){HAL_GPIO_TogglePin(Sound_GPIO_Port, Sound_Pin);HAL_Delay(50);}
+        		        if(re[i]!=' ')HAL_Delay(200);
+        		        }
+        }
+
+        if (tryb==1)//gdy dane to morse
+                {
+                	HAL_Delay(100);
+                	int size=strlen(receivedData);
+                	for(int i=0;i<size;i++)
+                		        {
+                		        if(receivedData[i]=='.'){enableSound=1;}
+                		        else if(receivedData[i]=='-'){enableSound=3;}
+                		        else if(receivedData[i]==' '&& receivedData[i+1]!=' '){HAL_Delay(400);}
+                		        while(enableSound>0){HAL_GPIO_TogglePin(Sound_GPIO_Port, Sound_Pin);HAL_Delay(50);}
+                		        if(receivedData[i]!=' ')HAL_Delay(200);
+                		        }
+                }
+
         for (uint8_t i = 0; i < 40; i++)
         {
             dataToSend[i] = 0;
         }
+
+        reset=1;
     }
 }
